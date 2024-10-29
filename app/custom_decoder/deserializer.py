@@ -27,7 +27,7 @@ def bytes_to_circuit(circuit_str: str) -> QuantumCircuit:
     return qc
 
 def load_quantum_circuit(obj: json):
-    load_circuit = json.loads(obj)
+    load_circuit = obj
     load_circuit = load_circuit['qc']
     restored_circuit = bytes_to_circuit(load_circuit)
     return restored_circuit[0] # unlist
