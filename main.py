@@ -21,12 +21,6 @@ from qiskit_aer.noise import NoiseModel
 from networkx.classes import Graph
 
 import httpx
-# FastAPI 인스턴스 생성
-app = FastAPI()
-
-# 요청 데이터 모델 정의
-class Model(BaseModel):
-    answer: Union[dict, str]
 
 
 from answer_data import (
@@ -163,7 +157,7 @@ async def verify_circuit(username: str, question: Union[str, int], request: Mode
     async with httpx.AsyncClient() as client:
         response = await client.post(
             "https://qff24quick.vercel.app/endpoint",  # 외부 서버의 엔드포인트 URL
-            json={"username": username, "grading_validation": grading_status}
+            json={"username": username, "question":question ,"grading_validation": grading_status}
         )
 
     # 외부 서버 응답 처리
