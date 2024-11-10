@@ -27,6 +27,7 @@ from custom_encoder.json_encoder import to_json
 
 class Model(BaseModel):
     answer: Union[Dict, str]
+    username: str
     
 def challengetest(candidate: Model):
     candidate = json.loads(candidate.answer) # qff_ku2024_grader 라이브러리에 정의된 grade 함수의 입력으로 payload가 들어감. payload = {'answer': serialized_answer} 와 같은 형식임. main.py의 verify_circuit 함수에서 Model 객체를 올바르게 처리할 수 있도록 해야함. Model 객체는 FastAPI가 자동으로 JSON 요청 본문을 파싱하여 전달해 주므로, request 매개변수를 직접 사용하면 됨.
@@ -43,11 +44,14 @@ def challengetest(candidate: Model):
     return candidate_qc == answer_qc
 
 def challenge1a(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
-    return candidate.__class__==str
+    
+    return candidate.__class__==str, username
 
 
 def challenge1b(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     candidate_qc = load_quantum_circuit(candidate)
     
@@ -58,10 +62,11 @@ def challenge1b(candidate: Model):
     sv_candidate = Statevector(candidate_qc)
     sv_answer = Statevector(answer_qc)
     
-    return sv_candidate.equiv(sv_answer)
+    return sv_candidate.equiv(sv_answer), username
     
     
 def challenge1c(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     
     ZZ = SparsePauliOp('ZZ')
@@ -73,10 +78,11 @@ def challenge1c(candidate: Model):
     
     answer = [IZ, IX, ZI, XI, ZZ, XX]
     answer = json.loads(to_json(answer)) # candidate가 참가자들 grader에서 to_json을 거친 후 여기 위에서 json.loads를 거쳤기에 똑같이 맞춰줌
-    return answer == candidate
+    return answer == candidate, username
 
 
 def challenge1d(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
 
     # candidate[0] 인 QuantumCircuit 부터 확인
@@ -105,12 +111,13 @@ def challenge1d(candidate: Model):
     
     check2 = answer_obs == candidate[1]
     
-    return check1 and check2
+    return check1 and check2, username
     
 
 ### challenge2 ###
 
 def challenge2a(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     candidate_qc = load_quantum_circuit(candidate)
     
@@ -123,18 +130,20 @@ def challenge2a(candidate: Model):
     sv_candidate = Statevector(candidate_qc)
     sv_answer = Statevector(answer_qc)
     
-    return sv_candidate.equiv(sv_answer)
+    return sv_candidate.equiv(sv_answer), username
     
 
 def challenge2b(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     
     check1 = candidate['metadata']['shots'] == 10000
     check2 = set(candidate['counts'].keys()) == {'10', '01'}
     
-    return check1 and check2
+    return check1 and check2, username
 
 def challenge2c(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     candidate_qc = load_quantum_circuit(candidate)
     
@@ -148,19 +157,21 @@ def challenge2c(candidate: Model):
     sv_candidate = Statevector(candidate_qc)
     sv_answer = Statevector(answer_qc)
     
-    return sv_candidate.equiv(sv_answer, rtol=1e-10)
+    return sv_candidate.equiv(sv_answer, rtol=1e-10), username
     
 def challenge2d(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     
     check1 = candidate['metadata']['shots'] == 10000
     check2 = set(candidate['counts'].keys()) == {'100', '010', '001'}
     
-    return check1 and check2
+    return check1 and check2, username
 
 ### challenge3 ###
 
 def challenge3a(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     
     answer = {}
@@ -171,39 +182,44 @@ def challenge3a(candidate: Model):
     answer["optimization"] = "A"
     answer["scheduling"] = "E"
     
-    return answer == candidate
+    return answer == candidate, username
 
 def challenge3b(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
 
     answer = [21, 3, 5, 3]
     
-    return answer == candidate
+    return answer == candidate, username
 
 def challenge3c(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
 
     answer = [29, 4, 5, 5]
     
-    return answer == candidate
+    return answer == candidate, username
 
 def challenge3d(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     
     answer = [37, 10, 4, 5]
     
-    return answer == candidate
+    return answer == candidate, username
 
 def challenge3e(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     seed = 10000
     backend = FakeTorino()
 
     answer = [33, 10, 4, 5]
     
-    return answer == candidate
+    return answer == candidate, username
 
 def challenge3f(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     
     circuit_depths = {
@@ -228,11 +244,12 @@ def challenge3f(candidate: Model):
     
     answer = [circuit_depths, gate_counts, scores]
     
-    return answer == candidate
+    return answer == candidate, username
 
 ### challenge4 ###
 
 def challenge4a(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     candidate_qc = load_quantum_circuit(candidate)
     
@@ -261,15 +278,17 @@ def challenge4a(candidate: Model):
     qc.measure(q1, b1)
     answer = qc
     
-    return candidate_qc == answer
+    return candidate_qc == answer, username
 
 def challenge4b(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     answer = {'00': 0, '01': 1/4, '10': 1/2, '11': 1/4}
     
-    return answer == candidate
+    return answer == candidate, username
 
 def challenge4c(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     candidate_qc = load_quantum_circuit(candidate)
         
@@ -307,16 +326,18 @@ def challenge4c(candidate: Model):
  
     answer = circuit.copy()
     
-    return answer == candidate_qc
+    return answer == candidate_qc, username
 
 def challenge4d(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     
     answer = {'000': 0, '001': 0, '010': 0, '011': 0, '100': 1/3, '101': 1/3, '110': 1/3, '111': 0}
 
-    return candidate == answer
+    return candidate == answer, username
 
 def challenge4e(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     candidate_qc = load_quantum_circuit(candidate)
     
@@ -336,10 +357,11 @@ def challenge4e(candidate: Model):
     answer_qc.h([0,1,2])
     answer_qc.measure([0,1],[0,1])
     
-    return answer_qc == candidate_qc
+    return answer_qc == candidate_qc, username
     
 
 def challenge4f(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     canddiate_qc = load_quantum_circuit(candidate)
     
@@ -364,10 +386,11 @@ def challenge4f(candidate: Model):
     with answer_qc.if_test((mid_measure[1], 0b1)):
         answer_qc.x(1)
     
-    return answer_qc == canddiate_qc
+    return answer_qc == canddiate_qc, username
     
 
 def challenge4g(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     candidate_qc = load_quantum_circuit(candidate)
     
@@ -413,19 +436,21 @@ def challenge4g(candidate: Model):
     answer_qc.measure(controls, mid_measure)
     answer_qc.measure(target, final_measure)
     
-    return candidate_qc == answer_qc
+    return candidate_qc == answer_qc, username
     
 
 def challenge4h(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     
     answer = {'0': 4/5, '1': 1/5}
     
-    return answer == candidate
+    return answer == candidate, username
 
 ### challenge5 ###
 
 def challenge5a(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     candidate_qc = load_quantum_circuit(candidate)
     
@@ -443,9 +468,10 @@ def challenge5a(candidate: Model):
     sv_candidate = Statevector(candidate_qc)
     sv_answer = Statevector(answer_qc)
     
-    return sv_candidate.equiv(sv_answer)
+    return sv_candidate.equiv(sv_answer), username
 
 def challenge5b(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     candidate_list = [load_quantum_circuit(candidate[i]) for i in range(4)]
     
@@ -468,10 +494,11 @@ def challenge5b(candidate: Model):
     
     answer_list = [qc00, qc01, qc10, qc11]
     
-    return answer_list == candidate_list
+    return answer_list == candidate_list, username
     
 
 def challenge5c(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     candidate_qc = load_quantum_circuit(candidate)
     
@@ -489,19 +516,21 @@ def challenge5c(candidate: Model):
     
     answer_qc.measure([0,1], [1,0])
     
-    return answer_qc == candidate_qc
+    return answer_qc == candidate_qc, username
     
 
 def challenge5d(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     
     answer = {'00': 'Y', '01': 'Z', '10': 'X', '11': 'I'}
     
-    return candidate == answer
+    return candidate == answer, username
 
 ### challenge6 ###
 
 def challenge6a(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     candidate_qc = load_quantum_circuit(candidate)
     
@@ -515,9 +544,10 @@ def challenge6a(candidate: Model):
     sv_candidate = Statevector(candidate_qc)
     sv_answer = Statevector(answer_qc)
     
-    return sv_candidate.equiv(sv_answer)
+    return sv_candidate.equiv(sv_answer), username
 
 def challenge6b(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     candidate_qc = load_quantum_circuit(candidate)
     
@@ -541,9 +571,10 @@ def challenge6b(candidate: Model):
     sv_candidate = Statevector(candidate_qc)
     sv_answer = Statevector(answer_qc)
     
-    return sv_candidate.equiv(sv_answer)
+    return sv_candidate.equiv(sv_answer), username
 
 def challenge6c(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     candidate_qc = load_quantum_circuit(candidate)
     
@@ -568,14 +599,16 @@ def challenge6c(candidate: Model):
     sv_candidate = Statevector(candidate_qc)
     sv_answer = Statevector(answer_qc)
     
-    return sv_candidate.equiv(sv_answer)
+    return sv_candidate.equiv(sv_answer), username
 
 def challenge6d(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     
-    return candidate == 3
+    return candidate == 3, username
 
 def challenge6e(candidate: Model):
+    username = candidate.username
     candidate = json.loads(candidate.answer)
     
-    return candidate == 0.961319
+    return candidate == 0.961319, username
