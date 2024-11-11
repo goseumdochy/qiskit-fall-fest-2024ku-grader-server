@@ -68,6 +68,7 @@ app = FastAPI()
 
 class Model(BaseModel):
     answer: Union[Dict, str]
+    username: str
 
 @app.get("/")
 def hello():
@@ -82,6 +83,7 @@ async def verify_circuit(username: str, question: Union[str, int], request: Mode
             valid,username = challengetest(request)
             
         case "1a":
+<<<<<<< HEAD
             valid,username = challenge1a(request)
         case "1b":
             valid,username = challenge1b(request)
@@ -149,6 +151,75 @@ async def verify_circuit(username: str, question: Union[str, int], request: Mode
         case "6e":
             valid,username = challenge6e(request)
         
+=======
+            valid, username = challenge1a(request)
+        case "1b":
+            valid, username = challenge1b(request)
+        case "1c":
+            valid, username = challenge1c(request)
+        case "1d":
+            valid, username = challenge1d(request)
+
+        case "2a":
+            valid, username = challenge2a(request)
+        case "2b":
+            valid, username = challenge2b(request)
+        case "2c":
+            valid, username = challenge2c(request)
+        case "2d":
+            valid, username = challenge2d(request)
+
+        case "3a":
+            valid, username = challenge3a(request)
+        case "3b":
+            valid, username = challenge3b(request)
+        case "3c":
+            valid, username = challenge3c(request)
+        case "3d":
+            valid, username = challenge3d(request)
+        case "3e":
+            valid, username = challenge3e(request)
+        case "3f":
+            valid, username = challenge3f(request)
+        
+        case "4a":
+            valid, username = challenge4a(request)
+        case "4b":
+            valid, username = challenge4b(request)
+        case "4c":
+            valid, username = challenge4c(request)
+        case "4d":
+            valid, username = challenge4d(request)
+        case "4e":
+            valid, username = challenge4e(request)
+        case "4f":
+            valid, username = challenge4f(request)
+        case "4g":
+            valid, username = challenge4g(request)
+        case "4h":
+            valid, username = challenge4h(request)
+            
+        case "5a":
+            valid, username = challenge5a(request)
+        case "5b":
+            valid, username = challenge5b(request)
+        case "5c":
+            valid, username = challenge5c(request)
+        case "5d":
+            valid, username = challenge5d(request)
+        
+        case "6a":
+            valid, username = challenge6a(request)
+        case "6b":
+            valid, username = challenge6b(request)
+        case "6c":
+            valid, username = challenge6c(request)
+        case "6d":
+            valid, username = challenge6d(request)
+        case "6e":
+            valid, username = challenge6e(request)
+    print(username)
+>>>>>>> 59cc77c1504c7ad91865e6573420d4add0943abb
             
      # 채점 결과 계산
     grading_status = "Valid" if valid else "Invalid"
