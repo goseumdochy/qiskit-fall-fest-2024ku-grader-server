@@ -227,18 +227,19 @@ app = FastAPI()
 
 class Model(BaseModel):
     answer: Union[Dict, str]
+    username: str
 
 @app.get("/")
 def hello():
     return "Welcome to 2024 Qiskit Fall Fest at Korea University"
 
 @app.post("/answers/{question}")
-async def verify_circuit(username: str, question: Union[str, int], request: Model):
+async def verify_circuit(question: Union[str, int], request: Model):
     valid: bool = False
     
     match question:
         case "test":
-            valid, username = challengetest(request)
+            valid = challengetest(request)
             
         case "1a":
             valid, username = challenge1a(request)
@@ -263,7 +264,7 @@ async def verify_circuit(username: str, question: Union[str, int], request: Mode
         case "3b":
             valid, username = challenge3b(request)
         case "3c":
-            valid = challenge3c(request)
+            valid, username = challenge3c(request)
         case "3d":
             valid, username = challenge3d(request)
         case "3e":
@@ -298,20 +299,20 @@ async def verify_circuit(username: str, question: Union[str, int], request: Mode
             valid, username = challenge5d(request)
         
         case "6a":
-            valid , username= challenge6a(request)
+            valid, username = challenge6a(request)
         case "6b":
             valid, username = challenge6b(request)
         case "6c":
             valid, username = challenge6c(request)
         case "6d":
-            valid , username= challenge6d(request)
+            valid, username = challenge6d(request)
         case "6e":
             valid, username = challenge6e(request)
         
             
      # 채점 결과 계산
     grading_status = "Valid" if valid else "invalid"
-
+    
     # 채점 후 결과를 외부 서버로 전송
     async with httpx.AsyncClient() as client:
         response = await client.post(
