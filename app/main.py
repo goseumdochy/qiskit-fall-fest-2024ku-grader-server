@@ -157,6 +157,7 @@
 # # if __name__ == "__main__" :
 # # 	uvicorn.run("main:app", reload=True)
 
+
 import json
 import numpy
 
@@ -223,7 +224,13 @@ from answer_data import (
     challenge6e,
 )
 
+import requests
+import asyncio
+import time
+
+
 app = FastAPI()
+# cache_data = {}
 
 class Model(BaseModel):
     answer: Union[Dict, str]
@@ -312,24 +319,51 @@ async def verify_circuit(question: Union[str, int], request: Model):
             
      # 채점 결과 계산
     grading_status = "Valid" if valid else "invalid"
+    answer = True if valid else False
     
-    # 채점 후 결과를 외부 서버로 전송
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            "https://qff24quick.vercel.app/endpoint",  # 외부 서버의 엔드포인트 URL
-            json={"username": username, "question":question ,"grading_validation": grading_status}
-        )
+    # #채점 후 결과를 외부 서버로 전송
+    # async with httpx.AsyncClient() as client:
+    #    response = await client.post(
+    #        "https://qff24quick.vercel.app/recieve-data",  # 외부 서버의 엔드포인트 URL
+    #        json={"username": username, "question":question ,"grading_validation": grading_status}
+    #    )
 
-    # 외부 서버 응답 처리
-    if response.status_code == 200:
-        return {"grading_validation": grading_status, "message": "Data sent successfully"}
-    else:
-        return {"grading_validation": grading_status, "message": "Failed to send data"}
-    
-    # if valid:
-    #     return {"grading_validation": "Valid"}
+    flask_url = 'https://qff24quick.vercel.app/receive-data'
+    async with httpx.AsyncClient() as client:
+        try:
+            json_data = {
+                "username": username,
+                "question": question,
+                "answer": answer
+            }
+            print("Payload:", json_data)  # 요청 데이터 확인
+            response = await client.post(
+                flask_url,
+                json=json_data
+            )
+            print(f"Response Status Code: {response.status_code}")
+            print(f"Response Text: {response.text}")
+            print(f"Successed sending data: {response.status_code}")
+        except httpx.RequestError as e:
+            print(f"Failed sending data: {e}")
+    # async with httpx.AsyncClient() as client:
+    #     try:
+    #         response = await client.post(
+    #             flask_url,
+    #             json={"username":username, "question":question, "answer": answer}
+    #         )
+    #         print(response)
+    #         print(f"successed sending data: {response.status_code}")
+    #     except httpx.RequestError as e:
+    #         print(f"failed sending data: {e}")
+
+    #외부 서버 응답 처리
+    # if response.status_code == 200:
+    #    return {"grading_validation": grading_status}
     # else:
-    #     return {"grading_validation": "invalid"}
-    
-# if __name__ == "__main__" :
-# 	uvicorn.run("main:app", reload=True)
+    #    return {"grading_validation": grading_status}
+    return {"grading_validation": grading_status}
+
+if __name__ == "__main__" :
+    uvicorn.run("main:app")
+    # asyncio.run(start_sending_data())
